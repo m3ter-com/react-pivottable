@@ -1,10 +1,9 @@
 name: Publish @m3ter-com/react-pivottable to NPM
 on:
   push:
-    branches:
-      - master
+    branches: [master]
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -13,12 +12,13 @@ jobs:
         run: npm install --ignore-scripts
       - name: Run tests
         run: npm run test
-      - name: Publish package
+      - name: Set up .npmrc
         uses: actions/setup-node@v2
         with:
           node-version: '16.x'
           registry-url: 'https://registry.npmjs.org'
-        - run: npm run build
-        - run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Build and publish
+        run: npm run build
+        run: npm publish --access public
