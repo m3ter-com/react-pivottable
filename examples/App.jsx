@@ -1,6 +1,6 @@
 import React from 'react';
 import tips from './tips';
-import {sortAs} from '../src/Utilities';
+import { sortAs } from '../src/Utilities';
 import TableRenderers from '../src/TableRenderers';
 import createPlotlyComponent from 'react-plotly.js/factory';
 import createPlotlyRenderers from '../src/PlotlyRenderers';
@@ -14,11 +14,11 @@ const Plot = createPlotlyComponent(window.Plotly);
 class PivotTableUISmartWrapper extends React.PureComponent {
     constructor(props) {
         super(props);
-        this.state = {pivotState: props};
+        this.state = { pivotState: props };
     }
 
     componentWillReceiveProps(nextProps) {
-        this.setState({pivotState: nextProps});
+        this.setState({ pivotState: nextProps });
     }
 
     render() {
@@ -30,7 +30,7 @@ class PivotTableUISmartWrapper extends React.PureComponent {
                     createPlotlyRenderers(Plot)
                 )}
                 {...this.state.pivotState}
-                onChange={s => this.setState({pivotState: s})}
+                onChange={s => this.setState({ pivotState: s })}
                 unusedOrientationCutoff={Infinity}
             />
         );
@@ -55,10 +55,10 @@ export default class App extends React.Component {
                         'Thursday',
                         'Friday',
                         'Saturday',
-                        'Sunday',
-                    ]),
+                        'Sunday'
+                    ])
                 },
-                plotlyOptions: {width: 900, height: 500},
+                plotlyOptions: { width: 900, height: 500 },
                 plotlyConfig: {},
                 tableOptions: {
                     clickCallback: function(e, value, filters, pivotData) {
@@ -69,9 +69,9 @@ export default class App extends React.Component {
                             names.push(record.Meal);
                         });
                         alert(names.join('\n'));
-                    },
-                },
-            },
+                    }
+                }
+            }
         });
     }
 
@@ -81,7 +81,7 @@ export default class App extends React.Component {
                 mode: 'thinking',
                 filename: '(Parsing CSV...)',
                 textarea: '',
-                pivotState: {data: []},
+                pivotState: { data: [] }
             },
             () =>
                 Papa.parse(files[0], {
@@ -91,8 +91,8 @@ export default class App extends React.Component {
                         this.setState({
                             mode: 'file',
                             filename: files[0].name,
-                            pivotState: {data: parsed.data},
-                        }),
+                            pivotState: { data: parsed.data }
+                        })
                 })
         );
     }
@@ -106,8 +106,8 @@ export default class App extends React.Component {
                     mode: 'text',
                     filename: 'Data from <textarea>',
                     textarea: event.target.value,
-                    pivotState: {data: parsed.data},
-                }),
+                    pivotState: { data: parsed.data }
+                })
         });
     }
 
