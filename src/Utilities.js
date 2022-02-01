@@ -12,6 +12,11 @@ import PropTypes from 'prop-types';
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
 
+const ASCENDING_SORT_LABEL = 'asc';
+const DESCENDING_SORT_LABEL = 'desc';
+const ROW_COL_KEY_JOINER = String.fromCharCode(0);
+const FALLBACK_ROW_VALUE = {value: () => null};
+
 const addSeparators = function(nStr, thousandsSep, decimalSep) {
   const x = String(nStr).split('.');
   let x1 = x[0];
@@ -611,6 +616,40 @@ class PivotData {
     };
   }
 
+  getUserSortedRowKeys(columnKey, sortOrder) {
+    try {
+      const {rowKeys, tree} = this;
+      const sortMultiplier = sortOrder === ASCENDING_SORT_LABEL ? 1 : -1;
+
+      // This rowKeys array is structured in a strange way.
+      // If, for example, we have three row headers added to the pivot table
+      // and these are Region, Age and Gender, rowKeys might look something like:
+      /**
+       * [
+       *     ['UK', 21, 'Male'],
+       *     ['UK', 21, 'Female'],
+       *     ...
+       * ]
+       */
+      // So, to get the value of a specific row on a specific column (so that we can
+      // sort the rows), we need to use this.tree, which stores all the table data
+      // using keys made up of these inner rowKeys arrays joined by a specific character
+      // (ROW_COL_JOINER).
+      return [...rowKeys].sort((rowAKeySet, rowBKeySet) => {
+        const rowAKey = rowAKeySet.join(ROW_COL_KEY_JOINER);
+        const rowAValue = tree[rowAKey][columnKey] || FALLBACK_ROW_VALUE;
+        const rowBKey = rowBKeySet.join(ROW_COL_KEY_JOINER);
+        const rowBValue = tree[rowBKey][columnKey] || FALLBACK_ROW_VALUE;
+
+        return (
+          sortMultiplier * naturalSort(rowAValue.value(), rowBValue.value())
+        );
+      });
+    } catch (e) {
+      return this.rowKeys;
+    }
+  }
+
   sortKeys() {
     if (!this.sorted) {
       this.sorted = true;
@@ -658,8 +697,8 @@ class PivotData {
     for (const x of Array.from(this.props.rows)) {
       rowKey.push(x in record ? record[x] : 'null');
     }
-    const flatRowKey = rowKey.join(String.fromCharCode(0));
-    const flatColKey = colKey.join(String.fromCharCode(0));
+    const flatRowKey = rowKey.join(ROW_COL_KEY_JOINER);
+    const flatColKey = colKey.join(ROW_COL_KEY_JOINER);
 
     this.allTotal.push(record);
 
@@ -696,8 +735,8 @@ class PivotData {
 
   getAggregator(rowKey, colKey) {
     let agg;
-    const flatRowKey = rowKey.join(String.fromCharCode(0));
-    const flatColKey = colKey.join(String.fromCharCode(0));
+    const flatRowKey = rowKey.join(ROW_COL_KEY_JOINER);
+    const flatColKey = colKey.join(ROW_COL_KEY_JOINER);
     if (rowKey.length === 0 && colKey.length === 0) {
       agg = this.allTotal;
     } else if (rowKey.length === 0) {
@@ -812,4 +851,7 @@ export {
   getSort,
   sortAs,
   PivotData,
+  ASCENDING_SORT_LABEL,
+  DESCENDING_SORT_LABEL,
+  ROW_COL_KEY_JOINER,
 };

@@ -24,6 +24,7 @@ class PivotTableUISmartWrapper extends React.PureComponent {
     render() {
         return (
             <PivotTableUI
+                enableColumnSorting
                 renderers={Object.assign(
                     {},
                     TableRenderers,
