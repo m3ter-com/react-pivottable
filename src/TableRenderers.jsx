@@ -119,16 +119,18 @@ function makeRenderer(opts = {}) {
                 }
             }
 
-            const getSortButtonClassNames = (columnKeySet, sortOrder) => {
+            const getSortButtonClassNames = columnKeySet => {
                 const uniqueColumnKey = columnKeySet.join(ROW_COL_KEY_JOINER);
                 const { sortingColumn } = this.props;
                 let classes = 'pvtColSortButton';
-                if (
-                    sortingColumn &&
-                    sortingColumn.name === uniqueColumnKey &&
-                    sortingColumn.order === sortOrder
-                ) {
-                    classes += ' pvtColSortButton-active';
+                if (sortingColumn && sortingColumn.name === uniqueColumnKey) {
+                    if (sortingColumn.order === ASCENDING_SORT_LABEL) {
+                        classes += ' pvtColSortButton-asc-active';
+                    }
+
+                    if (sortingColumn.order === DESCENDING_SORT_LABEL) {
+                        classes += ' pvtColSortButton-desc-active';
+                    }
                 }
 
                 return classes;
@@ -142,27 +144,31 @@ function makeRenderer(opts = {}) {
                 );
             };
 
-            const handleSortButtonClick = (
-                columnKeySet = [],
-                sortOrder = ASCENDING_SORT_LABEL
-            ) => {
+            const handleSortButtonClick = (columnKeySet = []) => {
                 if (pivotData.props.rows.length === 0) {
                     return;
                 }
 
+                // Find the current sorting column state
                 const { sortingColumn } = this.props;
                 const uniqueColumnKey = columnKeySet.join(ROW_COL_KEY_JOINER);
-                if (
-                    sortingColumn &&
-                    sortingColumn.name === uniqueColumnKey &&
-                    sortingColumn.order === sortOrder
-                ) {
-                    updateSortingColumn(null);
-                } else {
+                // If this is the first time this sort button has been clicked, set it's sorting to ascending
+                if (!sortingColumn || sortingColumn.name !== uniqueColumnKey) {
                     updateSortingColumn({
                         name: uniqueColumnKey,
-                        order: sortOrder
+                        order: ASCENDING_SORT_LABEL
                     });
+                } else {
+                    if (sortingColumn.order === ASCENDING_SORT_LABEL) {
+                        // If it was already in the ascending state, set it to descending
+                        updateSortingColumn({
+                            name: uniqueColumnKey,
+                            order: DESCENDING_SORT_LABEL
+                        });
+                    } else {
+                        // If it was already in the descending state, clear the sorting state
+                        updateSortingColumn(null);
+                    }
                 }
             };
 
@@ -234,36 +240,23 @@ function makeRenderer(opts = {}) {
                                                 <div className="pvtColLabelInner">
                                                     {colKey[j]}
                                                     {canSort && (
-                                                        <div className="pvtColSortButtonsWrapper">
-                                                            <button
-                                                                className={getSortButtonClassNames(
-                                                                    colKey,
-                                                                    ASCENDING_SORT_LABEL
-                                                                )}
-                                                                onClick={() =>
-                                                                    handleSortButtonClick(
-                                                                        colKey,
-                                                                        ASCENDING_SORT_LABEL
-                                                                    )
-                                                                }
-                                                            >
+                                                        <button
+                                                            className={getSortButtonClassNames(
+                                                                colKey
+                                                            )}
+                                                            onClick={() =>
+                                                                handleSortButtonClick(
+                                                                    colKey
+                                                                )
+                                                            }
+                                                        >
+                                                            <span className="pvtColSortButton-asc-icon">
                                                                 &#x25B2;
-                                                            </button>
-                                                            <button
-                                                                className={getSortButtonClassNames(
-                                                                    colKey,
-                                                                    DESCENDING_SORT_LABEL
-                                                                )}
-                                                                onClick={() =>
-                                                                    handleSortButtonClick(
-                                                                        colKey,
-                                                                        DESCENDING_SORT_LABEL
-                                                                    )
-                                                                }
-                                                            >
+                                                            </span>
+                                                            <span className="pvtColSortButton-desc-icon">
                                                                 &#x25BC;
-                                                            </button>
-                                                        </div>
+                                                            </span>
+                                                        </button>
                                                     )}
                                                 </div>
                                             </th>
