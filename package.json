@@ -1,6 +1,6 @@
 {
     "name": "@m3ter-com/react-pivottable",
-    "version": "0.11.2",
+    "version": "0.12.0",
     "description": "A M3ter fork of plotly's react-pivottable",
     "main": "PivotTableUI.js",
     "files": [
