@@ -5,6 +5,6 @@ by m3ter.
 
 ## Running locally
 
--   npm install
--   npm run start
+-   yarn install
+-   yarn start
 -   app is hosted at localhost:8080
