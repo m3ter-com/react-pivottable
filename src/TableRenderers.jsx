@@ -58,6 +58,22 @@ function redColorScaleGenerator(values) {
     };
 }
 
+// Some aggregators return values in the same units as the original
+// data. For these aggregators, we should use the provided valueFormatter
+// if it exists. Otherwise, we should use the standard agrregator's formatter.
+// E.g. A Sum of values in USD makes sense to be formatted with a "$"".
+// A Count of those values does not make sense to be formatted at all.
+const originalUnitAggregatorNames = [
+    'Sum',
+    'Average',
+    'Median',
+    'Minimum',
+    'Maximum',
+    'First',
+    'Last',
+    'Sum over Sum'
+];
+
 function makeRenderer(opts = {}) {
     class TableRenderer extends React.PureComponent {
         render() {
@@ -71,7 +87,13 @@ function makeRenderer(opts = {}) {
                   )
                 : pivotData.getRowKeys();
             const colKeys = pivotData.getColKeys();
+            const valueFormatter =
+                originalUnitAggregatorNames.includes(
+                    this.props.aggregatorName
+                ) && this.props.valueFormatter;
             const grandTotalAggregator = pivotData.getAggregator([], []);
+            const grandTotalFormatter =
+                valueFormatter || grandTotalAggregator.format;
 
             let valueCellColors = () => {};
             let rowTotalColors = () => {};
@@ -303,6 +325,9 @@ function makeRenderer(opts = {}) {
                                 rowKey,
                                 []
                             );
+                            const totalFormatter =
+                                valueFormatter || totalAggregator.format;
+
                             return (
                                 <tr key={`rowKeyRow${i}`}>
                                     {rowKey.map(function(txt, j) {
@@ -331,6 +356,9 @@ function makeRenderer(opts = {}) {
                                             rowKey,
                                             colKey
                                         );
+                                        const columnFormatter =
+                                            valueFormatter || aggregator.format;
+
                                         return (
                                             <td
                                                 className="pvtVal"
@@ -349,7 +377,7 @@ function makeRenderer(opts = {}) {
                                                     aggregator.value()
                                                 )}
                                             >
-                                                {aggregator.format(
+                                                {columnFormatter(
                                                     aggregator.value()
                                                 )}
                                             </td>
@@ -369,7 +397,7 @@ function makeRenderer(opts = {}) {
                                             totalAggregator.value()
                                         )}
                                     >
-                                        {totalAggregator.format(
+                                        {totalFormatter(
                                             totalAggregator.value()
                                         )}
                                     </td>
@@ -427,7 +455,7 @@ function makeRenderer(opts = {}) {
                                 }
                                 className="pvtGrandTotal"
                             >
-                                {grandTotalAggregator.format(
+                                {grandTotalFormatter(
                                     grandTotalAggregator.value()
                                 )}
                             </td>

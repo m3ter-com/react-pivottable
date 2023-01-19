@@ -195,7 +195,6 @@ const aggregatorTemplates = {
                 };
             };
     },
-
     uniques(fn, formatter = usFmtInt) {
         return function([attr]) {
             return function() {
@@ -215,7 +214,6 @@ const aggregatorTemplates = {
             };
         };
     },
-
     sum(formatter = usFmt) {
         return function([attr]) {
             return function() {
@@ -235,7 +233,6 @@ const aggregatorTemplates = {
             };
         };
     },
-
     extremes(mode, formatter = usFmt) {
         return function([attr]) {
             return function(data) {
@@ -285,7 +282,6 @@ const aggregatorTemplates = {
             };
         };
     },
-
     quantile(q, formatter = usFmt) {
         return function([attr]) {
             return function() {
@@ -315,7 +311,6 @@ const aggregatorTemplates = {
             };
         };
     },
-
     runningStat(mode = 'mean', ddof = 1, formatter = usFmt) {
         return function([attr]) {
             return function() {
@@ -361,7 +356,6 @@ const aggregatorTemplates = {
             };
         };
     },
-
     sumOverSum(formatter = usFmt) {
         return function([num, denom]) {
             return function() {
@@ -389,7 +383,6 @@ const aggregatorTemplates = {
             };
         };
     },
-
     fractionOf(wrapped, type = 'total', formatter = usFmtPct) {
         return (...x) =>
             function(data, rowKey, colKey) {
@@ -423,7 +416,6 @@ const aggregatorTemplates = {
             };
     }
 };
-
 aggregatorTemplates.countUnique = f =>
     aggregatorTemplates.uniques(x => x.length, f);
 aggregatorTemplates.listUnique = s =>
@@ -847,36 +839,37 @@ PivotData.forEachRecord = function(input, derivedAttributes, f) {
 };
 
 PivotData.defaultProps = {
-    aggregators: aggregators,
-    cols: [],
-    rows: [],
-    vals: [],
     aggregatorName: 'Count',
-    sorters: {},
-    valueFilter: {},
-    rowOrder: 'key_a_to_z',
+    aggregators: aggregators,
     colOrder: 'key_a_to_z',
-    derivedAttributes: {}
+    cols: [],
+    derivedAttributes: {},
+    rowOrder: 'key_a_to_z',
+    rows: [],
+    sorters: {},
+    vals: [],
+    valueFilter: {}
 };
 
 PivotData.propTypes = {
+    aggregatorName: PropTypes.string,
+    colOrder: PropTypes.oneOf(['key_a_to_z', 'value_a_to_z', 'value_z_to_a']),
+    cols: PropTypes.arrayOf(PropTypes.string),
+    valueFormatter: PropTypes.func,
     data: PropTypes.oneOfType([
         PropTypes.array,
         PropTypes.object,
         PropTypes.func
     ]).isRequired,
-    aggregatorName: PropTypes.string,
-    cols: PropTypes.arrayOf(PropTypes.string),
+    derivedAttributes: PropTypes.objectOf(PropTypes.func),
+    rowOrder: PropTypes.oneOf(['key_a_to_z', 'value_a_to_z', 'value_z_to_a']),
     rows: PropTypes.arrayOf(PropTypes.string),
-    vals: PropTypes.arrayOf(PropTypes.string),
-    valueFilter: PropTypes.objectOf(PropTypes.objectOf(PropTypes.bool)),
     sorters: PropTypes.oneOfType([
         PropTypes.func,
         PropTypes.objectOf(PropTypes.func)
     ]),
-    derivedAttributes: PropTypes.objectOf(PropTypes.func),
-    rowOrder: PropTypes.oneOf(['key_a_to_z', 'value_a_to_z', 'value_z_to_a']),
-    colOrder: PropTypes.oneOf(['key_a_to_z', 'value_a_to_z', 'value_z_to_a'])
+    vals: PropTypes.arrayOf(PropTypes.string),
+    valueFilter: PropTypes.objectOf(PropTypes.objectOf(PropTypes.bool))
 };
 
 export {

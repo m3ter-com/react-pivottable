@@ -1,6 +1,7 @@
 var webpack = require('webpack');
 
 module.exports = {
+    devtool: 'source-map',
     entry: ['babel-polyfill', 'react-hot-loader/patch', './examples/index.jsx'],
     output: {
         filename: 'bundle.js'

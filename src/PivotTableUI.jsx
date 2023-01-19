@@ -226,11 +226,10 @@ export class Dropdown extends React.PureComponent {
                                 role="button"
                                 onClick={e => {
                                     e.stopPropagation();
-                                    if (this.props.current === r) {
-                                        this.props.toggle();
-                                    } else {
+                                    if (this.props.current !== r) {
                                         this.props.setValue(r);
                                     }
+                                    this.props.toggle();
                                 }}
                                 className={
                                     'pvtDropdownValue ' +
@@ -462,7 +461,16 @@ class PivotTableUI extends React.PureComponent {
                                 : 'aggregators'
                         })
                     }
-                    setValue={this.propUpdater('aggregatorName')}
+                    setValue={value => {
+                        this.sendPropUpdate({
+                            aggregatorName: {
+                                $set: value
+                            },
+                            vals: {
+                                $set: []
+                            }
+                        });
+                    }}
                 />
                 <a
                     role="button"
