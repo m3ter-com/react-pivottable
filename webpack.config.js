@@ -1,39 +1,42 @@
-var webpack = require('webpack');
+const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 
-module.exports = {
-    devtool: 'source-map',
-    entry: ['babel-polyfill', 'react-hot-loader/patch', './examples/index.jsx'],
-    output: {
-        filename: 'bundle.js'
-    },
-    module: {
-        rules: [
-            {
-                test: /\.jsx?$/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: [['env', { modules: false }], 'react'],
-                        plugins: ['react-hot-loader/babel']
+module.exports = webpackEnv => {
+    const isEnvProduction = webpackEnv === 'production';
+
+    return {
+        devServer: {
+            hot: true,
+            static: './examples'
+        },
+        devtool: 'source-map',
+        entry: ['./examples/index.jsx'],
+        mode: isEnvProduction ? 'production' : 'development',
+        module: {
+            rules: [
+                {
+                    test: /\.jsx?$/,
+                    exclude: /node_modules/,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            plugins: isEnvProduction
+                                ? []
+                                : [require.resolve('react-refresh/babel')]
+                        }
                     }
                 },
-                exclude: /node_modules/
-            },
-            {
-                test: /\.css$/,
-                use: ['style-loader', 'css-loader']
-            }
-        ]
-    },
-    plugins: [
-        new webpack.NamedModulesPlugin(),
-        new webpack.HotModuleReplacementPlugin()
-    ],
-    devServer: {
-        contentBase: './examples',
-        hot: true
-    },
-    resolve: {
-        extensions: ['.js', '.jsx']
-    }
+                {
+                    test: /\.css$/,
+                    use: ['style-loader', 'css-loader']
+                }
+            ]
+        },
+        output: {
+            filename: 'bundle.js'
+        },
+        plugins: isEnvProduction ? [] : [new ReactRefreshWebpackPlugin()],
+        resolve: {
+            extensions: ['.js', '.jsx']
+        }
+    };
 };
