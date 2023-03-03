@@ -1,20 +1,11 @@
 {
     "name": "@m3ter-com/react-pivottable",
-    "version": "0.12.1",
+    "version": "0.13.0",
     "description": "A M3ter fork of plotly's react-pivottable",
-    "main": "PivotTableUI.js",
+    "main": "dist/PivotTableUI.js",
+    "types": "dist/PivotTableUI.d.ts",
     "files": [
-        "PivotTable.js",
-        "PivotTableUI.js",
-        "PlotlyRenderers.js",
-        "TableRenderers.js",
-        "Utilities.js",
-        "PivotTable.js.map",
-        "PivotTableUI.js.map",
-        "PlotlyRenderers.js.map",
-        "TableRenderers.js.map",
-        "Utilities.js.map",
-        "pivottable.css"
+        "dist"
     ],
     "scripts": {
         "start": "webpack serve",
@@ -24,8 +15,8 @@
         "test:prettier:fix": "prettier  --write \"src/*.js*\"",
         "test:jest": "jest",
         "test": "yarn run test:eslint && yarn run test:prettier && yarn run test:jest",
-        "clean": "rm -rf __tests__ PivotTable.js* PivotTableUI.js* PlotlyRenderers.js* TableRenderers.js* Utilities.js* pivottable.css",
-        "build": "yarn run clean && cp src/pivottable.css . && babel src --out-dir=. --source-maps"
+        "clean": "rm -rf __tests__ dist",
+        "build": "yarn run clean && babel src/*.{js,jsx} --out-dir=./dist --source-maps && cp src/pivottable.css ./dist/pivottable.css && cp src/PivotTableUI.d.ts ./dist/PivotTableUI.d.ts"
     },
     "repository": {
         "type": "git",
